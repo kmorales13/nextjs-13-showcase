@@ -58,44 +58,29 @@ export const createNewProject = async (form: FormState, creatorId: string) => {
 
 export const updateProject = async (form: FormState, projectId: string) => {
     let newForm = form
-    console.log({form, projectId})
+
     try {
         const isBase64 = isBase64DataURL(form.image);
 
         if (isBase64) {
-            console.log('before upload image')
             const imageUrl = await uploadImage(form.image);
-            console.log('after upload image')
             
             if (imageUrl.url) {
                 newForm = { ...form, image: imageUrl.url }
             }
-            
-            const { apiUrl, apiKey } = await getApiConfig();
-            
-            console.log('hereeee')
-            const client = new GraphQLClient(apiUrl, {
-                headers: {
-                    'x-api-key': apiKey,
-                },
-            });
-    
-            const mutation = updateProjectMutation(newForm, projectId);
-            console.log(mutation)
-            await client.request(mutation);
         }
+        
+        const { apiUrl, apiKey } = await getApiConfig();
+        
+        const client = new GraphQLClient(apiUrl, {
+            headers: {
+                'x-api-key': apiKey,
+            },
+        });
 
+        const mutation = updateProjectMutation(newForm, projectId);
 
-  
-
-        // const result = await makeRequest(`api/posts/${projectId}`, {
-        //     method: "PUT",
-        //     body: {
-        //         form: newForm
-        //     }
-        // })
-
-        // return result
+        await client.request(mutation);
     } catch (err) {
         console.log("Error", err)
     }
@@ -140,8 +125,6 @@ export const getProjectDetails = async (id: string) => {
         const mutation = getProjectByIdQuery(id);
         const data = await client.request(mutation);
 
-        console.log({data})
-
         return data
     } catch (error) {
         console.log("Error", error)
@@ -183,32 +166,6 @@ export const getUserProjects = async (id: string, last?: string, cursor?: string
         return data
     } catch (error) {
         console.log("Error", error)
-    }
-}
-
-export const updateUser = async (userId: string, form: UserProps) => {
-    try {
-        // const result = await makeRequest(`api/users/${userId}`, {
-        //     method: "PUT",
-        //     body: {
-        //         form,
-        //     }
-        // })
-
-        const { apiUrl, apiKey } = await getApiConfig();
-
-        const client = new GraphQLClient(apiUrl, {
-            headers: {
-                'x-api-key': apiKey,
-            },
-        });
-
-        const mutation = updateUserMutation(form, userId);
-        const data = await client.request(mutation);
-
-        return data;
-    } catch (err) {
-        console.log("Error", err)
     }
 }
 

@@ -1,11 +1,11 @@
 export const getProjectsQuery = (category: string | null, cursor: string | null) => {
   let query = `projectSearch(first: 20`;
 
-  if (cursor !== "null") {
+  if (cursor) {
     query += `, after: "${cursor}"`
   }
 
-  if (category !== "null" && category?.toLowerCase() !== 'all') {
+  if (category) {
     query += `, filter: { category: { eq: "${category}" } }`;
   }
 
@@ -126,7 +126,7 @@ export const getProjectByIdQuery = (id: string) => {
   }`
 }
 
-export const getProjectsOfUserQuery = (id: string, last?:  string, cursor?: string | null) => {
+export const getProjectsOfUserQuery = (id: string, last: number = 5, cursor?: string | null) => {
   let query = `{
     user(by: {id: "${id}"}) {
       id

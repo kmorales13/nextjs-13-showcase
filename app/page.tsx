@@ -1,5 +1,6 @@
 import { AllProjectsType } from "@/common.types";
 import HomeFilter from "@/components/HomeFilter";
+import LoadMore from "@/components/LoadMore";
 // import LoadMore from "@/components/LoadMore";
 import ProjectCard from "@/components/ProjectCard";
 import { getProjectsQuery  } from "@/graphql/query";
@@ -17,28 +18,6 @@ type Props = {
   searchParams: SearchParams
 }
 
-// const query = `{
-//   projectCollection(last: 10) {
-//     edges {
-//       node {
-//         title
-//         description
-//         id
-//         image
-//         category
-//         liveSiteUrl
-//         githubUrl
-//         createdBy {
-//           name
-//           email
-//           id
-//           avatarUrl
-//         }
-//       }
-//     }
-//   }
-// }`
-
 const Home = async ({ searchParams }: Props) => {
   let category = searchParams.category || null;
   let cursor = searchParams.cursor || null
@@ -49,19 +28,21 @@ const Home = async ({ searchParams }: Props) => {
     'Content-Type': 'application/graphql',
     'x-api-key': apiKey
   };
+
+  const query = getProjectsQuery(category, cursor)
   
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: headers,
-    body: JSON.stringify({ query: getProjectsQuery(category, cursor) }),
+    body: JSON.stringify({ query }),
     cache: 'no-store' 
   });
-  
+
   const { data } = await response.json();
 
-  const projectsToDisplay = data?.projectCollection?.edges || [];
-
-  console.log({ numberOfProjects: projectsToDisplay.length, projectsToDisplay})
+  console.log({ data })
+  
+  const projectsToDisplay = data?.projectSearch?.edges || [];
 
   if (projectsToDisplay.length === 0) {
     return (
@@ -88,9 +69,9 @@ const Home = async ({ searchParams }: Props) => {
           />
         ))}
       </section>
-      {/* {data?.projectSearch?.pageInfo?.hasNextPage && (
+      {data?.projectSearch?.pageInfo?.hasNextPage && (
         <LoadMore cursor={data?.projectSearch?.pageInfo?.endCursor} />
-      )} */}
+      )}
     </section>
   )
 };
