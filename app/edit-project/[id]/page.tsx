@@ -8,6 +8,7 @@ import { ProjectInterface } from "@/common.types";
 
 const EditProject = async ({ params: { id } }: { params: { id: string } }) => {
   const session = await getCurrentUser();
+
   if (!session?.user) redirect("/")
 
   const result = await getProjectDetails(id) as { project?: ProjectInterface };
@@ -18,11 +19,8 @@ const EditProject = async ({ params: { id } }: { params: { id: string } }) => {
 
   return (
     <Modal>
-      <h3 className="modal-head-text">
-        Edit Project
-      </h3>
+      <h3 className="modal-head-text">Edit Project</h3>
 
-      {/* @ts-ignore */}
       <ProjectForm type="edit" session={session} project={result?.project} />
     </Modal>
   );
