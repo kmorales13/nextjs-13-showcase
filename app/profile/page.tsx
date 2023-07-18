@@ -5,13 +5,13 @@ import { getUserProjects } from "@/lib/actions";
 import ProfilePage from "@/components/profile/ProfilePage";
 
 type Props = {
-  searchParams: {
-    tab?: "work" | "projects" | "about";
-    cursor?: "string"
-  };
+  searchParams: any
+  // searchParams: {
+  //   cursor?: "string"
+  // };
 };
 
-const MyProfile = async ({ searchParams }: Props) => {
+const MyProfile = async ({ searchParams }: any) => {
   const session = await getCurrentUser();
   // @ts-ignore
   if (!session?.user?.id) redirect("/")
@@ -25,6 +25,7 @@ const MyProfile = async ({ searchParams }: Props) => {
     <>
       <ProfilePage
         user={result?.user}
+        // @ts-ignore
         searchParams={searchParams}
         // @ts-ignore
         sessionUserId={session?.user?.id}

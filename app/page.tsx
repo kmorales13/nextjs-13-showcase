@@ -1,19 +1,18 @@
 import { AllProjectsType } from "@/common.types";
 import HomeFilter from "@/components/HomeFilter";
-import LoadMore from "@/components/LoadMore";
+// import LoadMore from "@/components/LoadMore";
 import ProjectCard from "@/components/ProjectCard";
 import { getProjectsQueryNew } from "@/graphql/query";
-import { GraphQLClient } from "graphql-request";
+// import { GraphQLClient } from "graphql-request";
 import { getApiConfig } from "@/lib/utils";
 
 type SearchParams = {
   category?: string | null;
-  search?: string | null;
   cursor?: string | null;
 }
 
 type Props = {
-  searchParams: SearchParams
+  searchParams: any
 }
 
 const Home = async ({ searchParams }: Props) => {
@@ -23,19 +22,19 @@ const Home = async ({ searchParams }: Props) => {
   const { apiUrl, apiKey } = await getApiConfig();
   const isProduction = process.env.NODE_ENV === 'production';
   const baseUrl = isProduction ? `${process.env.SERVER_URL || ''}` : `http://localhost:3000/`;
-  // const response = await fetch(`${baseUrl}/api/posts?category=${category}&cursor=${cursor}`);
+  const response = await fetch(`${baseUrl}/api/posts?category=${category}&cursor=${cursor}`);
+
+  // const response = await fetch(apiUrl, {
+  //   headers: { 'x-api-key': apiKey },
+  //   method: 'POST',
+  //   body: JSON.stringify({ query: getProjectsQueryNew({ category, cursor }) }),
+  //   next: { tags: [getProjectsQueryNew({ category, cursor })] }
+  // })
+
+  // const { data } = await response.json()
 
 
-  const response = await fetch(apiUrl, {
-    headers: { 'x-api-key': apiKey },
-    method: 'POST',
-    body: JSON.stringify({ query: getProjectsQueryNew({ category, cursor }) }),
-  })
-
-  const { data } = await response.json()
-
-
-  console.log({data})
+  // console.log({data})
 
   // const client = new GraphQLClient(apiUrl, {
   //   headers: {
@@ -46,7 +45,7 @@ const Home = async ({ searchParams }: Props) => {
   // const mutation = getProjectsQueryNew({ category, cursor });
   // const data = await client.request(mutation);
 
-  // const projects = await response.json();
+  const data = await response.json();
 
   const projectsToDisplay = data?.projectCollection?.edges || [];
 
