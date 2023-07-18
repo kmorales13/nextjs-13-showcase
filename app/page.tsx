@@ -22,16 +22,17 @@ const Home = async ({ searchParams }: Props) => {
   const { apiUrl, apiKey } = await getApiConfig();
   const isProduction = process.env.NODE_ENV === 'production';
   const baseUrl = isProduction ? `${process.env.SERVER_URL || ''}` : `http://localhost:3000/`;
-  const response = await fetch(`${baseUrl}/api/posts?category=${category}&cursor=${cursor}`);
+  // const response = await fetch(`${baseUrl}/api/posts?category=${category}&cursor=${cursor}`);
 
-  // const response = await fetch(apiUrl, {
-  //   headers: { 'x-api-key': apiKey },
-  //   method: 'POST',
-  //   body: JSON.stringify({ query: getProjectsQueryNew({ category, cursor }) }),
-  //   next: { tags: [getProjectsQueryNew({ category, cursor })] }
-  // })
+  const response = await fetch(apiUrl, {
+    headers: { 'x-api-key': apiKey },
+    method: 'POST',
+    body: JSON.stringify({ query: getProjectsQueryNew({ category, cursor }) }),
+    next: { tags: [getProjectsQueryNew({ category, cursor })] }
+  })
 
-  // const { data } = await response.json()
+  const { data } = await response.json()
+  console.log({data})
 
 
   // console.log({data})
@@ -45,9 +46,11 @@ const Home = async ({ searchParams }: Props) => {
   // const mutation = getProjectsQueryNew({ category, cursor });
   // const data = await client.request(mutation);
 
-  const data = await response.json();
+  // const data = await response.json();
 
   const projectsToDisplay = data?.projectCollection?.edges || [];
+
+  console.log({projectsToDisplay})
 
   if (projectsToDisplay.length === 0) {
     return (
