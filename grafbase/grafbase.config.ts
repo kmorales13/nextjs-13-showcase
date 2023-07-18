@@ -19,10 +19,23 @@ const Project = g.model('Project', {
   liveSiteUrl: g.url(), // URL field for the live site URL
   githubUrl: g.url(), // URL field for the GitHub URL
   likes: g.int().default(0), // Integer field for likes with a default value of 0
-  category: g.string(), // String field for the category
+  category: g.relation(() => Category), // String field for the category
   createdBy: g.relation(() => User), // Relation to the User model
 });
+
+const Category = g.model('Category', {
+  name: g.string().unique(), // Required string field for the category name, which should be unique
+  projects: g.relation(() => Project).list().optional(),
+});
+
+// make a cateogry a model -> set a slug
+// set that field as a unique field
+//when creating a project, just make a call to grafbase to get all categories, map the ids, and then when creating a project
+// connect it to category -> using the connect feature by passing the id. when clicking at teh cateogry, just make a call to grafbase -> to fetch category by slug and then get all projects by category
 
 export default config({
   schema: g
 })
+
+
+

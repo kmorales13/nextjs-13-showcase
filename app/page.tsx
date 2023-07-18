@@ -6,6 +6,8 @@ import { getProjectsQueryNew } from "@/graphql/query";
 // import { GraphQLClient } from "graphql-request";
 import { getApiConfig } from "@/lib/utils";
 
+export const dynamic = 'force-dynamic'
+
 type SearchParams = {
   category?: string | null;
   cursor?: string | null;
@@ -14,43 +16,51 @@ type SearchParams = {
 type Props = {
   searchParams: any
 }
+const query = `{
+  projectCollection(last: 10) {
+    edges {
+      node {
+        title
+        description
+        id
+        image
+        category
+        liveSiteUrl
+        githubUrl
+        createdBy {
+          name
+          email
+          id
+          avatarUrl
+        }
+      }
+    }
+  }
+}`
 
 const Home = async ({ searchParams }: Props) => {
-  let category = searchParams.category || null;
-  let cursor = searchParams.cursor || null
+  // let category = searchParams.category || null;
+  // let cursor = searchParams.cursor || null
   
   const { apiUrl, apiKey } = await getApiConfig();
-  const isProduction = process.env.NODE_ENV === 'production';
-  const baseUrl = isProduction ? `${process.env.SERVER_URL || ''}` : `http://localhost:3000/`;
-  // const response = await fetch(`${baseUrl}/api/posts?category=${category}&cursor=${cursor}`);
 
+  const headers = {
+    'Content-Type': 'application/graphql',
+    'x-api-key': apiKey
+  };
+  
   const response = await fetch(apiUrl, {
-    headers: { 'x-api-key': apiKey },
     method: 'POST',
-    body: JSON.stringify({ query: getProjectsQueryNew({ category, cursor }) }),
-    next: { tags: [getProjectsQueryNew({ category, cursor })] }
-  })
-
-  const { data } = await response.json()
-  console.log({data})
-
-
-  // console.log({data})
-
-  // const client = new GraphQLClient(apiUrl, {
-  //   headers: {
-  //       'x-api-key': apiKey,
-  //   },
-  // });
-
-  // const mutation = getProjectsQueryNew({ category, cursor });
-  // const data = await client.request(mutation);
-
-  // const data = await response.json();
+    headers: headers,
+    body: JSON.stringify({ query }),
+    cache: 'no-store' 
+  });
+  
+  const { data } = await response.json();
 
   const projectsToDisplay = data?.projectCollection?.edges || [];
 
-  console.log({projectsToDisplay})
+  console.log({ numberOfProjects: projectsToDisplay.length, projectsToDisplay})
 
   if (projectsToDisplay.length === 0) {
     return (
