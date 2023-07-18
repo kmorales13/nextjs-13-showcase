@@ -9,20 +9,14 @@ import RelatedProjects from "@/components/details/RelatedProjects"
 
 const Project = async ({ params: { id } }: { params: { id: string } }) => {
     const session = await getCurrentUser()
-
-    if (!id) return (
-        <p className="w-full text-center my-10 px-2">Oops, couldn&apos;t find project related to that id</p>
-    )
-
     const result = await getProjectDetails(id)
 
-        // @ts-ignore
-
-    if (!result?.project) return (
-        <p className="w-full text-center my-10 px-2">Failed to fetch project info</p>
-    )
     // @ts-ignore
+    if (!result?.project) return (
+        <p className="no-result-text">Failed to fetch project info</p>
+    )
 
+    // @ts-ignore
     const projectDetails = result?.project
 
     // @ts-ignore
@@ -30,7 +24,7 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
 
     return (
         <Modal>
-            {session?.user?.email === projectDetails?.createdBy?.email && (
+            {/* {session?.user?.email === projectDetails?.createdBy?.email && (
                 <section className="user-actions_section">
                     <Link href={renderLink()}>
                         <Image
@@ -44,10 +38,10 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
 
                     <ProjectActions projectId={projectDetails?.id} />
                 </section>
-            )}
+            )} */}
 
-            <section className="flexBetween max-lg:flex-col gap-y-8 max-w-4xl w-full">
-                <div className="flexStart gap-5 w-full max-[400px]:flex-col">
+            <section className="flexBetween gap-y-8 max-w-4xl max-xs:flex-col w-full">
+                <div className="flex-1 flex items-start gap-5 w-full max-xs:flex-col">
                     <Link href={renderLink()}>
                         <Image
                             src={projectDetails?.createdBy?.avatarUrl}
@@ -58,23 +52,27 @@ const Project = async ({ params: { id } }: { params: { id: string } }) => {
                         />
                     </Link>
 
-                    <div className="flexStart flex-col gap-1">
+                    <div className="flex-1 flexStart flex-col gap-1">
                         <p className="self-start text-lg font-semibold">
-                            {projectDetails?.title}
+                            {projectDetails?.title} and blah blah and blah
                         </p>
                         <div className="user-info">
                             <Link href={renderLink()}>
-                                {projectDetails?.createdBy?.name} <span className="text-gray">for</span> JSM
+                                {projectDetails?.createdBy?.name}
                             </Link>
                             <Image src="/dot.svg" width={4} height={4} alt="dot" />
-                            <button type="button">Follow</button>
-                            <Image src="/dot.svg" width={4} height={4} alt="dot" />
-                            <button type="button" className="text-primary-purple w-fit">
-                                Hire Us
-                            </button>
+                            <p className="text-primary-purple font-semibold">
+                                {projectDetails?.category}
+                            </p>
                         </div>
                     </div>
                 </div>
+
+                {session?.user?.email === projectDetails?.createdBy?.email && (
+                    <div className="flex justify-end items-center gap-2">
+                        <ProjectActions projectId={projectDetails?.id} />
+                    </div>
+                )}
             </section>
 
             <section className="mt-14">
