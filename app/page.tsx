@@ -1,17 +1,15 @@
 import { AllProjectsType } from "@/common.types";
 import HomeFilter from "@/components/HomeFilter";
 import LoadMore from "@/components/LoadMore";
-// import LoadMore from "@/components/LoadMore";
 import ProjectCard from "@/components/ProjectCard";
-import { getProjectsQuery  } from "@/graphql/query";
-// import { GraphQLClient } from "graphql-request";
-import { getApiConfig } from "@/lib/utils";
+import { fetchAllProjects } from "@/lib/actions";
 
 export const dynamic = 'force-dynamic'
 
 type SearchParams = {
   category?: string | null;
-  cursor?: string | null;
+  endcursor?: string | null;
+  startcursor?: string | null
 }
 
 type Props = {
@@ -20,28 +18,12 @@ type Props = {
 
 const Home = async ({ searchParams }: Props) => {
   let category = searchParams.category || null;
-  let cursor = searchParams.cursor || null
-  
-  const { apiUrl, apiKey } = await getApiConfig();
+  let endCursor = searchParams.endcursor || null
+  let startCursor = searchParams.startcursor || null
 
-  const headers = {
-    'Content-Type': 'application/graphql',
-    'x-api-key': apiKey
-  };
+  const  data  = await fetchAllProjects(category, startCursor, endCursor)
 
-  const query = getProjectsQuery(category, cursor)
-  
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({ query }),
-    cache: 'no-store' 
-  });
-
-  const { data } = await response.json();
-
-  console.log({ data })
-  
+  // @ts-ignore
   const projectsToDisplay = data?.projectSearch?.edges || [];
 
   if (projectsToDisplay.length === 0) {
@@ -69,9 +51,16 @@ const Home = async ({ searchParams }: Props) => {
           />
         ))}
       </section>
-      {data?.projectSearch?.pageInfo?.hasNextPage && (
-        <LoadMore cursor={data?.projectSearch?.pageInfo?.endCursor} />
-      )}
+        <LoadMore 
+          // @ts-ignore
+          startCursor={data?.projectSearch?.pageInfo?.startCursor} 
+          // @ts-ignore
+          endCursor={data?.projectSearch?.pageInfo?.endCursor} 
+          // @ts-ignore
+          hasPreviousPage={data?.projectSearch?.pageInfo?.hasPreviousPage} 
+          // @ts-ignore
+          hasNextPage={data?.projectSearch?.pageInfo.hasNextPage}
+        />
     </section>
   )
 };

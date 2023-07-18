@@ -1,22 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { categoryFilters } from "@/constant";
-import { updateSearchParams } from "@/lib/utils";
 
 const HomeFilter = () => {
   const router = useRouter();
-  const [tag, setTag] = useState("All");
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
+
+  const category = searchParams.get("category");
 
   const handleTags = (item: string) => {
-    const newPathName = updateSearchParams("category", item);
-    
-    router.push(newPathName);
-
-    setTag(item)
-  }
+    router.push(`${pathName}?category=${item}`);
+  };
 
   return (
     <div className="flexBetween w-full gap-5 flex-wrap">
@@ -26,7 +23,11 @@ const HomeFilter = () => {
             key={filter}
             type="button"
             onClick={() => handleTags(filter)}
-            className={`${tag === filter ? "bg-light-white-300 font-medium" : "font-normal"} px-4 py-3 rounded-lg capitalize whitespace-nowrap`}
+            className={`${
+              category === filter
+                ? "bg-light-white-300 font-medium"
+                : "font-normal"
+            } px-4 py-3 rounded-lg capitalize whitespace-nowrap`}
           >
             {filter}
           </button>

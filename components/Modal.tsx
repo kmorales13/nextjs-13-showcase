@@ -9,10 +9,8 @@ export default function Modal({ children }: { children: ReactNode }) {
     const wrapper = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
-    const onDismiss = useCallback(() => {
-        window.document.body.style.overflowY = "auto";
-        
-        router.back();
+    const onDismiss = useCallback(() => {        
+        router.push("/");
     }, [router]);
 
     const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -26,8 +24,6 @@ export default function Modal({ children }: { children: ReactNode }) {
     }, [onDismiss]);
 
     useEffect(() => {
-        window.document.body.style.overflowY = "hidden";
-
         document.addEventListener("keydown", onKeyDown);
 
         return () => document.removeEventListener("keydown", onKeyDown);
